@@ -2,29 +2,24 @@ package com.cooksys.twittr.entity;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
-import javax.persistence.GeneratedValue;
+import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
-
-public class User {
+@Entity
+public class Twit {
 
 	@Id
-	@GeneratedValue
-	private Integer id;
-	
-	@OneToOne
-	private String username;
-	
-	private Profile profile;
-	
+    private Integer id;
+
 	private Timestamp joined;
 	
 	@Embedded
 	private Credentials credentials;
 	
-	private Boolean isDeleted;
+	@Column(nullable = false)
+	private Boolean isActive;
 
 	/**
 	 * @return the id
@@ -38,34 +33,6 @@ public class User {
 	 */
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	/**
-	 * @return the username
-	 */
-	public String getUsername() {
-		return username;
-	}
-
-	/**
-	 * @param username the username to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	/**
-	 * @return the profile
-	 */
-	public Profile getProfile() {
-		return profile;
-	}
-
-	/**
-	 * @param profile the profile to set
-	 */
-	public void setProfile(Profile profile) {
-		this.profile = profile;
 	}
 
 	/**
@@ -99,15 +66,15 @@ public class User {
 	/**
 	 * @return the isDeleted
 	 */
-	public Boolean getIsDeleted() {
-		return isDeleted;
+	public Boolean getIsActive() {
+		return isActive;
 	}
 
 	/**
 	 * @param isDeleted the isDeleted to set
 	 */
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public void setIsActive(Boolean isDeleted) {
+		this.isActive = isDeleted;
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +99,7 @@ public class User {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
+		Twit other = (Twit) obj;
 		if (credentials == null) {
 			if (other.credentials != null)
 				return false;
