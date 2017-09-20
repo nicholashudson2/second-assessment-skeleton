@@ -1,16 +1,20 @@
 package com.cooksys.twittr.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-@Entity
+@Entity(name="person")
 public class Person {
 
 	@Id
@@ -29,10 +33,25 @@ public class Person {
 	@Column(nullable = false)
 	private Boolean active = true;
 	
+	@ManyToMany
+	@JoinTable(name="follower_following",
+	 joinColumns=@JoinColumn(name="followingId"),
+	 inverseJoinColumns=@JoinColumn(name="followerId")
+	)
+	private List<Person> followers;
+
+	@ManyToMany
+	@JoinTable(name="follower_following",
+	 joinColumns=@JoinColumn(name="followerId"),
+	 inverseJoinColumns=@JoinColumn(name="followingId")
+	)
+	private List<Person> following;
+
+	
 	public Person() {
 		super();
 	}
-
+	
 	public Person(Integer id, Credentials credentials, Profile profile, Timestamp joined) {
 		super();
 		this.id = id;
@@ -40,6 +59,34 @@ public class Person {
 		this.profile = profile;
 		this.active = true;
 		this.joined = joined;
+	}
+
+	/**
+	 * @return the followers
+	 */
+	public List<Person> getFollowers() {
+		return followers;
+	}
+
+	/**
+	 * @param followers the followers to set
+	 */
+	public void setFollowers(List<Person> followers) {
+		this.followers = followers;
+	}
+
+	/**
+	 * @return the following
+	 */
+	public List<Person> getFollowing() {
+		return following;
+	}
+
+	/**
+	 * @param following the following to set
+	 */
+	public void setFollowing(List<Person> following) {
+		this.following = following;
 	}
 
 	/**
@@ -138,3 +185,4 @@ public class Person {
 	
 	
 }
+
