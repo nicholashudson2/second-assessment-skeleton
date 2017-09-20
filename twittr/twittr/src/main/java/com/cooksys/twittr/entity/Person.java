@@ -5,21 +5,56 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
-public class Twit {
+public class Person {
 
 	@Id
+	@GeneratedValue
     private Integer id;
 
+	@CreationTimestamp
 	private Timestamp joined;
-	
+
 	@Embedded
 	private Credentials credentials;
 	
+	@Embedded
+	private Profile profile;
+	
 	@Column(nullable = false)
-	private Boolean isActive;
+	private Boolean active = true;
+	
+	public Person() {
+		super();
+	}
+
+	public Person(Integer id, Credentials credentials, Profile profile, Timestamp joined) {
+		super();
+		this.id = id;
+		this.credentials = credentials;
+		this.profile = profile;
+		this.active = true;
+		this.joined = joined;
+	}
+
+	/**
+	 * @return the profile
+	 */
+	public Profile getProfile() {
+		return profile;
+	}
+	
+	/**
+	 * @param profile the profile to set
+	 */
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
 
 	/**
 	 * @return the id
@@ -43,13 +78,6 @@ public class Twit {
 	}
 
 	/**
-	 * @param joined the joined to set
-	 */
-	public void setJoined(Timestamp joined) {
-		this.joined = joined;
-	}
-
-	/**
 	 * @return the credentials
 	 */
 	public Credentials getCredentials() {
@@ -66,15 +94,15 @@ public class Twit {
 	/**
 	 * @return the isDeleted
 	 */
-	public Boolean getIsActive() {
-		return isActive;
+	public Boolean getActive() {
+		return active;
 	}
 
 	/**
 	 * @param isDeleted the isDeleted to set
 	 */
-	public void setIsActive(Boolean isDeleted) {
-		this.isActive = isDeleted;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	/* (non-Javadoc)
@@ -99,7 +127,7 @@ public class Twit {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Twit other = (Twit) obj;
+		Person other = (Person) obj;
 		if (credentials == null) {
 			if (other.credentials != null)
 				return false;
