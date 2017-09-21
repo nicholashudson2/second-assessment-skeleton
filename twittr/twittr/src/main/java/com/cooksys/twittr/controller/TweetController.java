@@ -2,6 +2,7 @@ package com.cooksys.twittr.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.twittr.dto.TweetDto;
+import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.service.TweetService;
 
 @RestController
@@ -35,5 +37,10 @@ public class TweetController {
 	@GetMapping("tweets/{id}")
 	public TweetDto getTweetById(@PathVariable Integer id) {
 		return tweetService.findById(id);
+	}
+	
+	@DeleteMapping("tweets/{id}")
+	public TweetDto deleteTweet(@PathVariable Integer id, @RequestBody Credentials credentials) {
+		return tweetService.deleteTweet(id, credentials);
 	}
 }

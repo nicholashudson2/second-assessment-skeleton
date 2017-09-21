@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.twittr.dto.TweetDto;
+import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.entity.Tweet;
 import com.cooksys.twittr.mapper.TweetMapper;
 import com.cooksys.twittr.repository.PersonRepository;
@@ -43,6 +44,15 @@ public class TweetService {
 
 	public TweetDto findById(Integer id) {
 		return tweetMapper.toDto(tweetRepository.findById(id));
+	}
+
+	public TweetDto deleteTweet(Integer tweetId, Credentials credentials) {
+		Tweet tweet = tweetRepository.findById(tweetId);
+		if(tweet != null && personRepository.validateCredentials(personRepository.findByCredentialsUsername(tweet.getAuthor().getCredentials().getUsername()).getCredentials(), credentials)) {
+			tweet.setActive(false);
+			tweetRepository.save(tweet);
+		}
+		return tweetMapper.toDto(tweet);
 	}
 
 }
