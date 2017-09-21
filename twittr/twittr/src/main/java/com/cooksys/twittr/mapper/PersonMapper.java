@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 
+import com.cooksys.twittr.dto.OutputPersonDto;
 import com.cooksys.twittr.dto.PersonDto;
 import com.cooksys.twittr.entity.Person;
 
@@ -12,9 +13,10 @@ public interface PersonMapper {
 
 	Person fromDto(PersonDto dto);
 	
-	PersonDto toDto(Person user);
+	OutputPersonDto toOutputDto(Person user);
 	
 	List<Person> fromDtos(List<PersonDto> dtos);
 	
-	List<PersonDto> toDtos(List<Person> users);
+	List<OutputPersonDto> toOutputDtos(List<Person> users);
+	
 }

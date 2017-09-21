@@ -1,43 +1,39 @@
 package com.cooksys.twittr.entity;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import javax.persistence.Transient;
 
 @Entity
-@Table(name = "hashtags")
+@Table(name = "hashtag")
 public class Hashtag {
+	
+	@Transient
+	java.util.Date today = new java.util.Date();
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="hashtag_id")
 	private Integer id;
 	
-	private String tagName;
+	private String label;
 	
-	@CreationTimestamp
-	private Timestamp created;
+	private final Timestamp firstUsed = new java.sql.Timestamp(today.getTime());
 	
-	@UpdateTimestamp
-	private Timestamp lastTagged;
+	private Timestamp lastUsed = new java.sql.Timestamp(today.getTime());
 	
-	@ManyToMany
-	@JoinTable(name="tagged_tweets",
-	 joinColumns=@JoinColumn(columnDefinition="integer", name="tag_id"),
-	 inverseJoinColumns=@JoinColumn(columnDefinition="integer", name="tagged_tweet_id"))
-	private List<Tweet> taggedTweets;
+	@ManyToMany(mappedBy="hashtags", cascade=CascadeType.ALL)
+	private List<Tweet> taggedTweets = new ArrayList<>();
 	
 	
 
@@ -45,11 +41,70 @@ public class Hashtag {
 		super();
 	}
 
-	public Hashtag(Integer id, String title, List<Tweet> taggedTweets) {
+	public Hashtag(String label) {
+		super();
+		this.label = label;
+	}
+	
+	
+
+	public Hashtag(Integer id, String label, Timestamp lastUsed, List<Tweet> taggedTweets) {
 		super();
 		this.id = id;
-		this.tagName = title;
+		this.label = label;
+		this.lastUsed = lastUsed;
 		this.taggedTweets = taggedTweets;
+	}
+	
+	
+
+	/**
+	 * @return the today
+	 */
+	public java.util.Date getToday() {
+		return today;
+	}
+
+	/**
+	 * @param today the today to set
+	 */
+	public void setToday(java.util.Date today) {
+		this.today = today;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the lastUsed
+	 */
+	public Timestamp getLastUsed() {
+		return lastUsed;
+	}
+
+	/**
+	 * @param lastUsed the lastUsed to set
+	 */
+	public void setLastUsed(Timestamp lastUsed) {
+		this.lastUsed = lastUsed;
+	}
+
+	/**
+	 * @return the firstUsed
+	 */
+	public Timestamp getFirstUsed() {
+		return firstUsed;
 	}
 
 	/**
@@ -70,14 +125,14 @@ public class Hashtag {
 	 * @return the title
 	 */
 	public String getTagName() {
-		return tagName;
+		return label;
 	}
 
 	/**
 	 * @param title the title to set
 	 */
-	public void setTagName(String tagName) {
-		this.tagName = tagName;
+	public void setTagName(String label) {
+		this.label = label;
 	}
 
 	/**

@@ -5,13 +5,9 @@ import com.cooksys.twittr.entity.Profile;
 
 public class PersonDto {
 
-	private Integer id;
-	
 	private Credentials credentials;
 	
 	private Profile profile;
-	
-	
 	
 	/**
 	 * @return the credentials
@@ -39,21 +35,6 @@ public class PersonDto {
 	 */
 	public void setProfile(Profile profile) {
 		this.profile = profile;
-	}
-
-	
-	/**
-	 * @return the id
-	 */
-	public Integer getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 }

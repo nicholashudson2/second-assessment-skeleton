@@ -14,13 +14,17 @@ public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 	List<Tweet> findByActiveTrueOrderByPostedDesc();
 	
 	Tweet findById(Integer id);
+
+	List<Tweet> findByAuthorCredentialsUsernameAndActiveTrueOrderByPostedDesc(String username);
+	
+	List<Tweet> findByHashtagsLabel(String label);
 	
 	public default List<String> getMentions(String content) {
-		String[] splitContents = content.split(" ");
 		List<String> mentions = new ArrayList<>();
-		for (String s : splitContents) {
+		for (String s : content.split(" ")) {
 			if(s.charAt(0) == '@') {
-				mentions.add(s);
+				String result = s.replaceAll("@", "");
+				mentions.add(result);
 			}
 		}
 		return mentions;
@@ -31,9 +35,11 @@ public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 		List<String> hashtags = new ArrayList<>();
 		for (String s : splitContents) {
 			if(s.charAt(0) == '#') {
-				hashtags.add(s);
+				String result = s.replaceAll("#", "");
+				hashtags.add(result);
 			}
 		}
 		return hashtags;
 	}
+
 }

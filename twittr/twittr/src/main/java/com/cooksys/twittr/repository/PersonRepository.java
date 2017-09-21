@@ -13,6 +13,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
 	Person findByCredentialsUsername(String username);
 	
+	List<Person> getFollowersByActiveTrue(Person person);
+	
 	List<Person> findByActiveTrue();
 	
 	public default Boolean validateCredentials(Credentials validate, Credentials credentials) {

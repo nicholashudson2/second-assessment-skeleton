@@ -1,6 +1,7 @@
 package com.cooksys.twittr.entity;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -13,19 +14,23 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
-import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity(name="person")
 public class Person {
 
+	@Transient
+	java.util.Date today = new java.util.Date();
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="person_id")
     private Integer id;
-
-	@CreationTimestamp
-	private Timestamp joined;
+	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
+	private final Timestamp joined = new java.sql.Timestamp(today.getTime());
 
 	@Embedded
 	private Credentials credentials;
@@ -40,40 +45,47 @@ public class Person {
 	@JoinTable(name="follower_following",
 	 joinColumns=@JoinColumn(name="following_id"),
 	 inverseJoinColumns=@JoinColumn(name="follower_id"))
-	private List<Person> followers;
+	private List<Person> followers = new ArrayList<>();
 
 	@ManyToMany
 	@JoinTable(name="follower_following",
 	 joinColumns=@JoinColumn(name="follower_id"),
 	 inverseJoinColumns=@JoinColumn(name="following_id"))
-	private List<Person> following;
+	private List<Person> following = new ArrayList<>();
 	
-	@ManyToMany
-	@JoinTable(name="likes_tweets",
-	 joinColumns=@JoinColumn(name="person_id"),
-	 inverseJoinColumns=@JoinColumn(name="liked_tweet_id"))
-	private List<Tweet> likedTweets;
+	@ManyToMany(mappedBy="likes")
+	private List<Tweet> likedTweets = new ArrayList<>();
 
 	@OneToMany(mappedBy="author")
-	private List<Tweet> tweets;
+	private List<Tweet> tweets = new ArrayList<>();
 	
-	@ManyToMany
-	@JoinTable(name="mentioned_tweets",
-	 joinColumns=@JoinColumn(name="person_id"),
-	 inverseJoinColumns=@JoinColumn(name="mentioned_tweet_id"))
-	private List<Tweet> mentioned;
+	@ManyToMany(mappedBy="mentions")
+	private List<Tweet> mentioned = new ArrayList<>();
 	
 	public Person() {
 		super();
 	}
 	
-	public Person(Integer id, Credentials credentials, Profile profile, Timestamp joined) {
+	public Person(Integer id, Credentials credentials, Profile profile) {
 		super();
 		this.id = id;
 		this.credentials = credentials;
 		this.profile = profile;
 		this.active = true;
-		this.joined = joined;
+	}
+	
+	/**
+	 * @return the username
+	 */
+	public String getUsername() {
+		return credentials.getUsername();
+	}
+
+	/**
+	 * @param username the username to set
+	 */
+	public void setUsername(String username) {
+		this.credentials.setUsername(username);
 	}
 
 	/**

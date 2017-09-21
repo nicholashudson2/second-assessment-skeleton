@@ -2,37 +2,20 @@ package com.cooksys.twittr.dto;
 
 public class HashtagDto {
 
-	private Integer id;
-	
-	private String tagName;
+	private String label;
 
 	/**
-	 * @return the id
+	 * @return the label
 	 */
-	public Integer getId() {
-		return id;
+	public String getLabel() {
+		return label;
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param label the label to set
 	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
-	/**
-	 * @return the tagName
-	 */
-	public String getTagName() {
-		return tagName;
-	}
-
-	/**
-	 * @param tagName the tagName to set
-	 */
-	public void setTagName(String tagName) {
-		this.tagName = tagName;
-	}
-	
-	
 }

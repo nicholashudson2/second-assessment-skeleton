@@ -4,22 +4,25 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
-import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Tweet {
 
+	@Transient
+	java.util.Date today = new java.util.Date();
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="tweet_id")
@@ -28,66 +31,51 @@ public class Tweet {
 	@ManyToOne
 	private Person author;
 
-	@CreationTimestamp
-	private Timestamp posted;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
+	private final Timestamp posted = new java.sql.Timestamp(today.getTime());
 
 	private String content;
 
 	@ManyToOne
-	@JoinColumn(name = "in_reply_to_id")
 	private Tweet inReplyTo;
 	
-	@OneToMany
-	@JoinColumn(name = "reply_id")
+	@OneToMany(mappedBy="inReplyTo")
 	private List<Tweet> replies;
 
 	@ManyToOne
-	@JoinColumn(name = "repost_of_tweet_id")
 	private Tweet repostOf;
 	
-	@OneToMany
-	@JoinColumn(name = "reposted_tweet_id")
+	@OneToMany(mappedBy="repostOf")
 	private List<Tweet> reposts;
 
 	@ManyToMany
-	@JoinTable(name="likes_tweets",
-	 joinColumns=@JoinColumn(columnDefinition="integer", name="liked_tweet_id"),
-	 inverseJoinColumns=@JoinColumn(columnDefinition="integer", name="person_id"))
 	private List<Person> likes;
 
 	private Boolean active;
 	
 	@ManyToMany
-	@JoinTable(name="mentioned_tweets",
-	 joinColumns=@JoinColumn(columnDefinition="integer", name="mentioned_tweet_id"),
-	 inverseJoinColumns=@JoinColumn(columnDefinition="integer", name="person_id"))
-	private List<Person> mentions;
+	private List<Person> mentions = new ArrayList<>();
 	
-	@ManyToMany
-	@JoinTable(name="tagged_tweets",
-	 joinColumns=@JoinColumn(columnDefinition="integer", name="tagged_tweet_id"),
-	 inverseJoinColumns=@JoinColumn(columnDefinition="integer", name="tag_id"))
-	private List<Hashtag> hashtags;
+	@ManyToMany(cascade=CascadeType.ALL)
+	private List<Hashtag> hashtags = new ArrayList<>();
 
 	public Tweet() {
 		super();
 	}
 	
-	public Tweet(Integer id, Person author, Timestamp posted, String content) {
+	public Tweet(Integer id, Person author, String content) {
 		super();
 		this.id = id;
 		this.author = author;
-		this.posted = posted;
 		this.content = content;
 		this.mentions = new ArrayList<>();
 		this.hashtags = new ArrayList<>();
 	}
 	
-	public Tweet(Integer id, Person author, Timestamp posted, String content, Tweet inReplyTo, Tweet repostOf, List<Person> mentions, List<Hashtag> hashtags) {
+	public Tweet(Integer id, Person author, String content, Tweet inReplyTo, Tweet repostOf, List<Person> mentions, List<Hashtag> hashtags) {
 		super();
 		this.id = id;
 		this.author = author;
-		this.posted = posted;
 		this.content = content;
 		this.inReplyTo = inReplyTo;
 		this.repostOf = repostOf;
@@ -189,6 +177,64 @@ public class Tweet {
 	 */
 	public void setLikes(List<Person> likes) {
 		this.likes = likes;
+	}
+	
+	
+
+	/**
+	 * @return the replies
+	 */
+	public List<Tweet> getReplies() {
+		return replies;
+	}
+
+	/**
+	 * @param replies the replies to set
+	 */
+	public void setReplies(List<Tweet> replies) {
+		this.replies = replies;
+	}
+
+	/**
+	 * @return the reposts
+	 */
+	public List<Tweet> getReposts() {
+		return reposts;
+	}
+
+	/**
+	 * @param reposts the reposts to set
+	 */
+	public void setReposts(List<Tweet> reposts) {
+		this.reposts = reposts;
+	}
+
+	/**
+	 * @return the mentions
+	 */
+	public List<Person> getMentions() {
+		return mentions;
+	}
+
+	/**
+	 * @param mentions the mentions to set
+	 */
+	public void setMentions(List<Person> mentions) {
+		this.mentions = mentions;
+	}
+
+	/**
+	 * @return the hashtags
+	 */
+	public List<Hashtag> getHashtags() {
+		return hashtags;
+	}
+
+	/**
+	 * @param hashtags the hashtags to set
+	 */
+	public void setHashtags(List<Hashtag> hashtags) {
+		this.hashtags = hashtags;
 	}
 
 	/**

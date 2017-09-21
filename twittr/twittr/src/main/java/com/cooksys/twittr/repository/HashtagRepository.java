@@ -8,6 +8,10 @@ import com.cooksys.twittr.entity.Hashtag;
 
 public interface HashtagRepository extends JpaRepository<Hashtag, Integer> {
 
-	List<Hashtag> findAllByOrderByLastTaggedDesc();
+	List<Hashtag> findAllByOrderByLastUsedDesc();
+	
+	Hashtag findByLabel(String label);
+	
+	Hashtag findHashtagsByTaggedTweets(Integer taggedTweetsId);
 	
 }
