@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cooksys.twittr.dto.OutputHashtagDto;
+import com.cooksys.twittr.dto.OutputPersonDto;
 import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.TweetDto;
 import com.cooksys.twittr.entity.Credentials;
@@ -88,4 +89,13 @@ public class TweetController {
 		return tweetService.findById(id);
 	}
 	
+	@GetMapping("tweets/{id}/likes")
+	public List<OutputPersonDto> getTweetLikes(@PathVariable Integer id, HttpServletResponse response) {
+		return tweetService.getTweetLikes(id, response);
+	}
+	
+	@GetMapping("tweets/{id}/mentions")
+	public List<OutputPersonDto> getTweetMentions(@PathVariable Integer id, HttpServletResponse response) {
+		return tweetService.getTweetMentions(id, response);
+	}
 }

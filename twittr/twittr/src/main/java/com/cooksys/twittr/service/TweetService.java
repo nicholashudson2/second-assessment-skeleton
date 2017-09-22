@@ -8,11 +8,13 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.twittr.dto.OutputHashtagDto;
+import com.cooksys.twittr.dto.OutputPersonDto;
 import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.TweetDto;
 import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.entity.Tweet;
 import com.cooksys.twittr.mapper.HashtagMapper;
+import com.cooksys.twittr.mapper.PersonMapper;
 import com.cooksys.twittr.mapper.TweetMapper;
 import com.cooksys.twittr.repository.HashtagRepository;
 import com.cooksys.twittr.repository.PersonRepository;
@@ -27,15 +29,17 @@ public class TweetService {
 	private HashtagService hashtagService;
 	private HashtagRepository hashtagRepository;
 	private HashtagMapper hashtagMapper;
+	private PersonMapper personMapper;
 
 	public TweetService(TweetRepository tweetRepository, TweetMapper tweetMapper, PersonRepository personRepository,
-			HashtagService hashtagService, HashtagRepository hashtagRepository, HashtagMapper hashtagMapper) {
+			HashtagService hashtagService, HashtagRepository hashtagRepository, HashtagMapper hashtagMapper, PersonMapper personMapper) {
 		this.tweetRepository = tweetRepository;
 		this.tweetMapper = tweetMapper;
 		this.personRepository = personRepository;
 		this.hashtagService = hashtagService;
 		this.hashtagRepository = hashtagRepository;
 		this.hashtagMapper = hashtagMapper;
+		this.personMapper = personMapper;
 	}
 
 	public List<OutputTweetDto> getTweets() {
@@ -134,4 +138,13 @@ public class TweetService {
 		return hashtagMapper.toDtos(tweetRepository.findById(id).getHashtags());
 	}
 
+	public List<OutputPersonDto> getTweetLikes(Integer id, HttpServletResponse response) {
+		if(findById(id) == null || !tweetRepository.findById(id).getActive())
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return personMapper.toOutputDtos(tweetRepository.findById(id).getLikes());
+	}
+	
+	public List<OutputPersonDto> getTweetMentions(Integer id, HttpServletResponse response) {
+		return personMapper.toOutputDtos(tweetRepository.findById(id).getMentions());
+	}
 }
