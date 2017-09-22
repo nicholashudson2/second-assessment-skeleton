@@ -99,6 +99,11 @@ public class TweetController {
 		return tweetService.getTweetReplies(id, response);
 	}
 	
+	@GetMapping("tweets/{id}/context")
+	public List<OutputTweetDto> getTweetContext(@PathVariable Integer id, HttpServletResponse response) {
+		return tweetService.getContext(id, response);
+	}
+	
 	@GetMapping("tweets/{id}/reposts")
 	public List<OutputTweetDto> getTweetReposts(@PathVariable Integer id, HttpServletResponse response) {
 		return tweetService.getTweetReposts(id, response);

@@ -1,5 +1,7 @@
 package com.cooksys.twittr.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -144,14 +146,33 @@ public class TweetService {
 		return personMapper.toOutputDtos(tweetRepository.findById(id).getLikes());
 	}
 	
-	public List<OutputPersonDto> getTweetMentions(Integer id, HttpServletResponse response) {
-		return personMapper.toOutputDtos(tweetRepository.findById(id).getMentions());
+	public List<OutputTweetDto> getContext(Integer id, HttpServletResponse response) {
+		List<Tweet> tweets = new ArrayList<>();
+		Tweet thisTweet = tweetRepository.findById(id);
+		while (thisTweet.getInReplyTo() != null) {
+			thisTweet = thisTweet.getInReplyTo();
+		}
+		do {
+			for(Tweet t : thisTweet.getReplies()) {
+				tweets.add(t);
+				thisTweet = t;
+			}
+		} while (thisTweet.getReplies() != null);
+		Collections.sort(tweets);
+		Collections.reverse(tweets);
+		return tweetMapper.toDtos(tweets);
 	}
-
+	
 	public List<OutputTweetDto> getTweetReplies(Integer id, HttpServletResponse response) {
 		return tweetMapper.toDtos(tweetRepository.findById(id).getReplies());
 	}
 
 	public List<OutputTweetDto> getTweetReposts(Integer id, HttpServletResponse response) {
-		return tweetMapper.toDtos(tweetRepository.findById(id).getReposts());	}
+		return tweetMapper.toDtos(tweetRepository.findById(id).getReposts());	
+		}
+	
+	public List<OutputPersonDto> getTweetMentions(Integer id, HttpServletResponse response) {
+		return personMapper.toOutputDtos(tweetRepository.findById(id).getMentions());
+	}
+	
 }
