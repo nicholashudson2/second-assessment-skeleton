@@ -149,9 +149,9 @@ public class TweetService {
 	public List<OutputTweetDto> getContext(Integer id, HttpServletResponse response) {
 		List<Tweet> tweets = new ArrayList<>();
 		Tweet thisTweet = tweetRepository.findById(id);
-		tweets.add(thisTweet);
 		while (thisTweet.getInReplyTo() != null) {
 			thisTweet = thisTweet.getInReplyTo();
+			tweets.add(thisTweet);
 		}
 		do {
 			for(Tweet t : thisTweet.getReplies()) {
