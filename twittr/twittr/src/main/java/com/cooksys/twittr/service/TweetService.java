@@ -46,9 +46,7 @@ public class TweetService {
 	public OutputTweetDto create(TweetDto tweetDto) {
 		Tweet tweet = new Tweet();
 		tweetRepository.save(tweet);
-		if (personRepository.validateCredentials(
-				personRepository.findByCredentialsUsername(tweetDto.getCredentials().getUsername()).getCredentials(),
-				tweetDto.getCredentials())) {
+		if (personRepository.validateCredentials(personRepository.findByCredentialsUsername(tweetDto.getCredentials().getUsername()).getCredentials(), tweetDto.getCredentials())) {
 			tweet.setAuthor(personRepository.findByCredentialsUsername(tweetDto.getCredentials().getUsername()));
 			tweet.setContent(tweetDto.getContent());
 			tweet.setActive(true);

@@ -19,7 +19,7 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-public class Tweet {
+public class Tweet implements Comparable<Tweet> {
 
 	@Transient
 	java.util.Date today = new java.util.Date();
@@ -289,6 +289,10 @@ public class Tweet {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	
+	public int compareTo(Tweet other) {
+		return this.posted.compareTo(other.posted);
 	}
 
 }

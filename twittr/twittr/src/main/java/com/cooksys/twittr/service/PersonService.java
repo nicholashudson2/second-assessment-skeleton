@@ -1,6 +1,7 @@
 package com.cooksys.twittr.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -12,6 +13,7 @@ import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.PersonDto;
 import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.entity.Person;
+import com.cooksys.twittr.entity.Tweet;
 import com.cooksys.twittr.mapper.PersonMapper;
 import com.cooksys.twittr.mapper.TweetMapper;
 import com.cooksys.twittr.repository.PersonRepository;
@@ -136,6 +138,20 @@ public class PersonService {
 
 	public List<OutputTweetDto> findTweetsByMentions(String username) {
 		return tweetMapper.toDtos(personRepository.findByCredentialsUsername(username).getMentioned());
+	}
+	
+	public List<OutputTweetDto> getFeed(Person person) {
+		List<Tweet> feed = new ArrayList<>();
+		for(Person p : person.getFollowing()) {
+			for (Tweet t : p.getTweets()) {
+				feed.add(t);
+			}
+		} for (Tweet t : person.getTweets()) {
+			feed.add(t);
+		}
+		Collections.sort(feed);
+		Collections.reverse(feed);
+		return tweetMapper.toDtos(feed);
 	}
 
 }

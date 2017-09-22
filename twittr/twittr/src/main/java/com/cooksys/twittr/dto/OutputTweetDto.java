@@ -2,12 +2,15 @@ package com.cooksys.twittr.dto;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class OutputTweetDto {
 
 	private Integer id;
 	
 	private OutputPersonDto author;
 	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
 	private Timestamp posted;
 	
 	private String content;
