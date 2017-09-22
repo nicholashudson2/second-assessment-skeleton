@@ -149,15 +149,18 @@ public class TweetService {
 	public List<OutputTweetDto> getContext(Integer id, HttpServletResponse response) {
 		List<Tweet> tweets = new ArrayList<>();
 		Tweet thisTweet = tweetRepository.findById(id);
+		tweets.add(thisTweet);
 		while (thisTweet.getInReplyTo() != null) {
 			thisTweet = thisTweet.getInReplyTo();
 		}
 		do {
 			for(Tweet t : thisTweet.getReplies()) {
-				tweets.add(t);
+				if(!tweets.contains(t)) {
+					tweets.add(t);
+				}
 				thisTweet = t;
 			}
-		} while (thisTweet.getReplies() != null);
+		} while (!thisTweet.getReplies().isEmpty());
 		Collections.sort(tweets);
 		Collections.reverse(tweets);
 		return tweetMapper.toDtos(tweets);
