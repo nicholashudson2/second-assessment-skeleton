@@ -11,8 +11,8 @@ import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.TweetDto;
 import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.entity.Tweet;
-import com.cooksys.twittr.mapper.HashtagMapper;
 import com.cooksys.twittr.mapper.TweetMapper;
+import com.cooksys.twittr.repository.HashtagRepository;
 import com.cooksys.twittr.repository.PersonRepository;
 import com.cooksys.twittr.repository.TweetRepository;
 
@@ -23,14 +23,15 @@ public class TweetService {
 	private TweetMapper tweetMapper;
 	private PersonRepository personRepository;
 	private HashtagService hashtagService;
-	private HashtagMapper hashtagMapper;
+	private HashtagRepository hashtagRepository;
 
-	public TweetService(TweetRepository tweetRepository, TweetMapper tweetMapper, PersonRepository personRepository, HashtagService hashtagService, HashtagMapper hashtagMapper) {
+	public TweetService(TweetRepository tweetRepository, TweetMapper tweetMapper, PersonRepository personRepository,
+			HashtagService hashtagService, HashtagRepository hashtagRepository) {
 		this.tweetRepository = tweetRepository;
 		this.tweetMapper = tweetMapper;
 		this.personRepository = personRepository;
 		this.hashtagService = hashtagService;
-		this.hashtagMapper = hashtagMapper;
+		this.hashtagRepository = hashtagRepository;
 	}
 
 	public List<OutputTweetDto> getTweets() {
@@ -41,7 +42,9 @@ public class TweetService {
 	public OutputTweetDto create(TweetDto tweetDto) {
 		Tweet tweet = new Tweet();
 		tweetRepository.save(tweet);
-		if (personRepository.validateCredentials(personRepository.findByCredentialsUsername(tweetDto.getCredentials().getUsername()).getCredentials(), tweetDto.getCredentials())) {
+		if (personRepository.validateCredentials(
+				personRepository.findByCredentialsUsername(tweetDto.getCredentials().getUsername()).getCredentials(),
+				tweetDto.getCredentials())) {
 			tweet.setAuthor(personRepository.findByCredentialsUsername(tweetDto.getCredentials().getUsername()));
 			tweet.setContent(tweetDto.getContent());
 			tweet.setActive(true);
@@ -51,7 +54,9 @@ public class TweetService {
 		return tweetMapper.toDto(tweetRepository.save(tweet));
 	}
 
-	public OutputTweetDto findById(Integer id) {
+	public OutputTweetDto findById(Integer id, HttpServletResponse response) {
+		if (tweetRepository.findById(id) == null || tweetRepository.findById(id).getActive() == false)
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return tweetMapper.toDto(tweetRepository.findById(id));
 	}
 
@@ -85,22 +90,36 @@ public class TweetService {
 		}
 		return valid;
 	}
-	
+
 	@Transactional
 	public Tweet addMentionsAndHashtags(Integer tweetId) {
 		Tweet modifiedTweet = tweetRepository.findById(tweetId);
 		for (String s : tweetRepository.getMentions(modifiedTweet.getContent())) {
 			modifiedTweet.getMentions().add(personRepository.findByCredentialsUsername(s));
-			
 		}
 		for (String s : tweetRepository.getHashtags(modifiedTweet.getContent())) {
-			if(hashtagService.findByLabel(s) == null) 
-				hashtagService.create(s);
-			modifiedTweet.getHashtags().add(hashtagMapper.fromOutputDto(hashtagService.findByLabel(s)));
+			if (hashtagService.findByLabel(s) == null)
+				modifiedTweet.getHashtags().add(hashtagRepository.save(hashtagService.create(s)));
 		}
 		return modifiedTweet;
 	}
+
+	@Transactional
+	public OutputTweetDto createReply(Integer id, TweetDto tweetDto) {
+		Tweet tweet = tweetRepository.findById(create(tweetDto).getId());
+		tweet.setInReplyTo(tweetRepository.findById(id));
+		return tweetMapper.toDto(tweetRepository.save(tweet));
+	}
 	
+	@Transactional
+	public OutputTweetDto createRepost(Integer id, Credentials credentials) {
+		Tweet tweet = new Tweet();
+		tweet.setAuthor(personRepository.findByCredentialsUsername(credentials.getUsername()));
+		tweet.setContent(tweetRepository.findById(id).getContent());
+		tweet.setRepostOf(tweetRepository.findById(id));
+		return tweetMapper.toDto(tweetRepository.save(tweet));
+	}
+
 	public List<OutputTweetDto> findTweetsByTagName(String tagName) {
 		return tweetMapper.toDtos(tweetRepository.findByHashtagsLabel(tagName));
 	}

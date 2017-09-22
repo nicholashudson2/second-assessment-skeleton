@@ -4,15 +4,18 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "hashtag")
@@ -28,11 +31,16 @@ public class Hashtag {
 	
 	private String label;
 	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
 	private final Timestamp firstUsed = new java.sql.Timestamp(today.getTime());
 	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
 	private Timestamp lastUsed = new java.sql.Timestamp(today.getTime());
 	
-	@ManyToMany(mappedBy="hashtags", cascade=CascadeType.ALL)
+	@ManyToMany
+	@JoinTable(name="hashtag_tweets",
+	 joinColumns=@JoinColumn(name="hashtag_id"),
+	 inverseJoinColumns=@JoinColumn(name="tagged_tweets_id"))
 	private List<Tweet> taggedTweets = new ArrayList<>();
 	
 	
@@ -46,8 +54,6 @@ public class Hashtag {
 		this.label = label;
 	}
 	
-	
-
 	public Hashtag(Integer id, String label, Timestamp lastUsed, List<Tweet> taggedTweets) {
 		super();
 		this.id = id;

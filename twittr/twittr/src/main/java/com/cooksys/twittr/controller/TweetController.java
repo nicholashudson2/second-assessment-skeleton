@@ -17,6 +17,7 @@ import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.TweetDto;
 import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.service.HashtagService;
+import com.cooksys.twittr.service.PersonService;
 import com.cooksys.twittr.service.TweetService;
 
 @RestController
@@ -25,10 +26,12 @@ public class TweetController {
 
 	private TweetService tweetService;
 	private HashtagService hashtagService;
+	private PersonService personService;
 
-	public TweetController(TweetService tweetService, HashtagService hashtagService) {
+	public TweetController(TweetService tweetService, HashtagService hashtagService, PersonService personService) {
 		this.tweetService = tweetService;
 		this.hashtagService = hashtagService;
+		this.personService = personService;
 	}
 	
 	@GetMapping("tags")
@@ -52,8 +55,8 @@ public class TweetController {
 	}
 	
 	@GetMapping("tweets/{id}")
-	public OutputTweetDto getTweetById(@PathVariable Integer id) {
-		return tweetService.findById(id);
+	public OutputTweetDto getTweetById(@PathVariable Integer id, HttpServletResponse response) {
+		return tweetService.findById(id, response);
 	}
 	
 	@DeleteMapping("tweets/{id}")
@@ -65,4 +68,24 @@ public class TweetController {
 	public void likeTweet(@PathVariable Integer id, @RequestBody Credentials credentials, HttpServletResponse response) {
 		tweetService.likeTweet(id, credentials, response);
 	}
+	
+	@PostMapping("tweets/{id}/reply")
+	public OutputTweetDto createReply(@PathVariable Integer id, @RequestBody TweetDto tweetDto, HttpServletResponse response) {
+		if(!personService.validateCredentials(tweetDto.getCredentials()))
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		return tweetService.createReply(id, tweetDto);
+	}
+	
+	@PostMapping("tweets/{id}/repost")
+	public OutputTweetDto createRepost(@PathVariable Integer id, @RequestBody Credentials credentials, HttpServletResponse response) {
+		if(!personService.validateCredentials(credentials))
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		return tweetService.createRepost(id, credentials);
+	}
+	
+	@GetMapping("tweets/{id}/tags")
+	public List<OutputHashtagDto> getHashtags(@PathVariable Integer id, HttpServletResponse response) {
+		return hashtagService.findById(id);
+	}
+	
 }

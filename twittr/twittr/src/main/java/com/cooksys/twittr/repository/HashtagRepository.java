@@ -12,6 +12,6 @@ public interface HashtagRepository extends JpaRepository<Hashtag, Integer> {
 	
 	Hashtag findByLabel(String label);
 	
-	Hashtag findHashtagsByTaggedTweets(Integer taggedTweetsId);
+	List<Hashtag> findHashtagsByTaggedTweets(Integer taggedTweetsId);
 	
 }
