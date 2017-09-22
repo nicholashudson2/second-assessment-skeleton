@@ -147,4 +147,11 @@ public class TweetService {
 	public List<OutputPersonDto> getTweetMentions(Integer id, HttpServletResponse response) {
 		return personMapper.toOutputDtos(tweetRepository.findById(id).getMentions());
 	}
+
+	public List<OutputTweetDto> getTweetReplies(Integer id, HttpServletResponse response) {
+		return tweetMapper.toDtos(tweetRepository.findById(id).getReplies());
+	}
+
+	public List<OutputTweetDto> getTweetReposts(Integer id, HttpServletResponse response) {
+		return tweetMapper.toDtos(tweetRepository.findById(id).getReposts());	}
 }

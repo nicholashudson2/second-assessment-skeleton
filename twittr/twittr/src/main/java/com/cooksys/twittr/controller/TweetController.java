@@ -94,6 +94,16 @@ public class TweetController {
 		return tweetService.getTweetLikes(id, response);
 	}
 	
+	@GetMapping("tweets/{id}/replies")
+	public List<OutputTweetDto> getTweetReplies(@PathVariable Integer id, HttpServletResponse response) {
+		return tweetService.getTweetReplies(id, response);
+	}
+	
+	@GetMapping("tweets/{id}/reposts")
+	public List<OutputTweetDto> getTweetReposts(@PathVariable Integer id, HttpServletResponse response) {
+		return tweetService.getTweetReposts(id, response);
+	}
+	
 	@GetMapping("tweets/{id}/mentions")
 	public List<OutputPersonDto> getTweetMentions(@PathVariable Integer id, HttpServletResponse response) {
 		return tweetService.getTweetMentions(id, response);
