@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cooksys.twittr.dto.OutputHashtagDto;
 import com.cooksys.twittr.dto.OutputPersonDto;
 import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.PersonDto;
 import com.cooksys.twittr.entity.Credentials;
+import com.cooksys.twittr.entity.Hashtag;
 import com.cooksys.twittr.service.PersonService;
 import com.cooksys.twittr.service.TweetService;
 
@@ -26,10 +28,12 @@ public class PersonController {
 
 	private PersonService personService;
 	private TweetService tweetService;
+	private TweetController tweetController;
 
-	public PersonController(PersonService personService, TweetService tweetService) {
+	public PersonController(PersonService personService, TweetService tweetService, TweetController tweetController) {
 		this.personService = personService;
 		this.tweetService = tweetService;
+		this.tweetController = tweetController;
 	}
 
 	@GetMapping("users")
@@ -63,6 +67,16 @@ public class PersonController {
 		return personService.findByUsername(username);
 	}
 
+	@GetMapping("validate/tag/exists/{label}")
+	public Boolean validateExistingHashtag(@PathVariable String label) {
+		for(OutputHashtagDto h : tweetController.getHashtags()) {
+			if(h.getLabel().equalsIgnoreCase(label)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@GetMapping("validate/username/exists/@{username}")
 	public Boolean validateExistingUsername(@PathVariable String username) {
 		return (personService.findByUsername(username) != null && personService.checkIfActive(username)) ? true : false;
@@ -85,6 +99,13 @@ public class PersonController {
 		if (!validateExistingUsername(username) || !personService.validateCredentials(credentials) || !username.equals(credentials.getUsername())) 
 			response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		personService.unfollowUser(username, credentials);
+	}
+	
+	@GetMapping("users/@{username}/mentions")
+	public List<OutputTweetDto> getTweetsByMentions(@PathVariable String username, HttpServletResponse response) {
+		if(!validateExistingUsername(username))
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return personService.findTweetsByMentions(username);
 	}
 
 	@GetMapping("users/@{username}/tweets")

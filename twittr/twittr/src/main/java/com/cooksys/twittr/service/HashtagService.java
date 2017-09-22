@@ -52,8 +52,4 @@ public class HashtagService {
 		return hashtagMapper.toDto(hashtagRepository.findByLabel(tagName));
 	}
 	
-	public List<OutputHashtagDto> findById(Integer id) {
-		return hashtagMapper.toDtos(hashtagRepository.findHashtagsByTaggedTweets(id));
-	}
-	
 }

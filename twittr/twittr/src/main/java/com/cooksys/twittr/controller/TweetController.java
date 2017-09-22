@@ -85,7 +85,7 @@ public class TweetController {
 	
 	@GetMapping("tweets/{id}/tags")
 	public List<OutputHashtagDto> getHashtags(@PathVariable Integer id, HttpServletResponse response) {
-		return hashtagService.findById(id);
+		return tweetService.findById(id);
 	}
 	
 }

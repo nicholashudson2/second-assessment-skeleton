@@ -17,7 +17,9 @@ public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 
 	List<Tweet> findByAuthorCredentialsUsernameAndActiveTrueOrderByPostedDesc(String username);
 	
-	List<Tweet> findByHashtagsLabel(String label);
+	List<Tweet> findTweetsByHashtagsLabelOrderByPostedDesc(String label);
+
+	List<Tweet> findTweetsByMentionsAndActiveTrueOrderByPostedDesc(String username);
 	
 	public default List<String> getMentions(String content) {
 		List<String> mentions = new ArrayList<>();
@@ -41,5 +43,6 @@ public interface TweetRepository extends JpaRepository<Tweet, Integer> {
 		}
 		return hashtags;
 	}
+
 
 }

@@ -192,6 +192,36 @@ public class Person {
 	public void setTweets(List<Tweet> tweets) {
 		this.tweets = tweets;
 	}
+	
+	
+
+	/**
+	 * @return the likedTweets
+	 */
+	public List<Tweet> getLikedTweets() {
+		return likedTweets;
+	}
+
+	/**
+	 * @param likedTweets the likedTweets to set
+	 */
+	public void setLikedTweets(List<Tweet> likedTweets) {
+		this.likedTweets = likedTweets;
+	}
+
+	/**
+	 * @return the mentioned
+	 */
+	public List<Tweet> getMentioned() {
+		return mentioned;
+	}
+
+	/**
+	 * @param mentioned the mentioned to set
+	 */
+	public void setMentioned(List<Tweet> mentioned) {
+		this.mentioned = mentioned;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

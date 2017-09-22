@@ -8,10 +8,12 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.cooksys.twittr.dto.OutputPersonDto;
+import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.PersonDto;
 import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.entity.Person;
 import com.cooksys.twittr.mapper.PersonMapper;
+import com.cooksys.twittr.mapper.TweetMapper;
 import com.cooksys.twittr.repository.PersonRepository;
 
 @Service
@@ -19,10 +21,12 @@ public class PersonService {
 
 	private PersonRepository personRepository;
 	private PersonMapper personMapper;
+	private TweetMapper tweetMapper;
 
-	public PersonService(PersonRepository personRepository, PersonMapper personMapper) {
+	public PersonService(PersonRepository personRepository, PersonMapper personMapper, TweetMapper tweetMapper) {
 		this.personRepository = personRepository;
 		this.personMapper = personMapper;
+		this.tweetMapper = tweetMapper;
 	}
 
 	public List<OutputPersonDto> getActiveUsers() {
@@ -128,6 +132,10 @@ public class PersonService {
 				following.add(personMapper.toOutputDto(p));
 		}
 		return following;
+	}
+
+	public List<OutputTweetDto> findTweetsByMentions(String username) {
+		return tweetMapper.toDtos(personRepository.findByCredentialsUsername(username).getMentioned());
 	}
 
 }

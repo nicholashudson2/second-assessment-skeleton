@@ -7,10 +7,12 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.cooksys.twittr.dto.OutputHashtagDto;
 import com.cooksys.twittr.dto.OutputTweetDto;
 import com.cooksys.twittr.dto.TweetDto;
 import com.cooksys.twittr.entity.Credentials;
 import com.cooksys.twittr.entity.Tweet;
+import com.cooksys.twittr.mapper.HashtagMapper;
 import com.cooksys.twittr.mapper.TweetMapper;
 import com.cooksys.twittr.repository.HashtagRepository;
 import com.cooksys.twittr.repository.PersonRepository;
@@ -24,14 +26,16 @@ public class TweetService {
 	private PersonRepository personRepository;
 	private HashtagService hashtagService;
 	private HashtagRepository hashtagRepository;
+	private HashtagMapper hashtagMapper;
 
 	public TweetService(TweetRepository tweetRepository, TweetMapper tweetMapper, PersonRepository personRepository,
-			HashtagService hashtagService, HashtagRepository hashtagRepository) {
+			HashtagService hashtagService, HashtagRepository hashtagRepository, HashtagMapper hashtagMapper) {
 		this.tweetRepository = tweetRepository;
 		this.tweetMapper = tweetMapper;
 		this.personRepository = personRepository;
 		this.hashtagService = hashtagService;
 		this.hashtagRepository = hashtagRepository;
+		this.hashtagMapper = hashtagMapper;
 	}
 
 	public List<OutputTweetDto> getTweets() {
@@ -121,7 +125,15 @@ public class TweetService {
 	}
 
 	public List<OutputTweetDto> findTweetsByTagName(String tagName) {
-		return tweetMapper.toDtos(tweetRepository.findByHashtagsLabel(tagName));
+		return tweetMapper.toDtos(tweetRepository.findTweetsByHashtagsLabelOrderByPostedDesc(tagName));
+	}
+	
+	public List<OutputTweetDto> findTweetsByMentions(String username) {
+		return tweetMapper.toDtos(tweetRepository.findTweetsByMentionsAndActiveTrueOrderByPostedDesc(username));
+	}
+	
+	public List<OutputHashtagDto> findById(Integer id) {
+		return hashtagMapper.toDtos(tweetRepository.findById(id).getHashtags());
 	}
 
 }

@@ -32,6 +32,7 @@ public class Hashtag {
 	private String label;
 	
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
+	@Column(name = "first_used", nullable = false, updatable = false)
 	private final Timestamp firstUsed = new java.sql.Timestamp(today.getTime());
 	
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
